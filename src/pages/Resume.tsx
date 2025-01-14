@@ -1,6 +1,32 @@
 import { FileDown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchResumeData } from "../services/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Resume = () => {
+  const { data: resume, isLoading } = useQuery({
+    queryKey: ['resume'],
+    queryFn: fetchResumeData,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <div className="flex justify-between items-center mb-8">
+              <Skeleton className="h-12 w-32" />
+              <Skeleton className="h-10 w-40" />
+            </div>
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-48 mb-8" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,67 +46,55 @@ const Resume = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Experience</h2>
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-medium text-primary">Senior AI Engineer</h3>
-                <p className="text-gray-600">Company Name • 2021 - Present</p>
-                <ul className="mt-2 list-disc list-inside text-gray-600">
-                  <li>Led development of computer vision models for autonomous systems</li>
-                  <li>Improved model accuracy by 25% through innovative architecture changes</li>
-                  <li>Mentored junior engineers and conducted technical interviews</li>
-                </ul>
-              </div>
-              {/* Add more experience items */}
+              {resume?.experience.map((exp, index) => (
+                <div key={index}>
+                  <h3 className="text-lg font-medium text-primary">{exp.title}</h3>
+                  <p className="text-gray-600">{exp.company} • {exp.period}</p>
+                  <ul className="mt-2 list-disc list-inside text-gray-600">
+                    {exp.description.map((desc, i) => (
+                      <li key={i}>{desc}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Education</h2>
             <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-medium text-primary">M.S. in Computer Science</h3>
-                <p className="text-gray-600">University Name • 2019 - 2021</p>
-                <p className="text-gray-600">Focus: Machine Learning and Artificial Intelligence</p>
-              </div>
-              {/* Add more education items */}
+              {resume?.education.map((edu, index) => (
+                <div key={index}>
+                  <h3 className="text-lg font-medium text-primary">{edu.degree}</h3>
+                  <p className="text-gray-600">{edu.institution} • {edu.period}</p>
+                  <p className="text-gray-600">{edu.details}</p>
+                </div>
+              ))}
             </div>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Skills</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div>
-                <h3 className="font-medium text-primary mb-2">Programming</h3>
-                <ul className="text-gray-600">
-                  <li>Python</li>
-                  <li>JavaScript/TypeScript</li>
-                  <li>C++</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-medium text-primary mb-2">ML/AI</h3>
-                <ul className="text-gray-600">
-                  <li>PyTorch</li>
-                  <li>TensorFlow</li>
-                  <li>Scikit-learn</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-medium text-primary mb-2">Tools</h3>
-                <ul className="text-gray-600">
-                  <li>Docker</li>
-                  <li>Git</li>
-                  <li>AWS/GCP</li>
-                </ul>
-              </div>
+              {resume && Object.entries(resume.skills).map(([category, skills]) => (
+                <div key={category}>
+                  <h3 className="font-medium text-primary mb-2">{category}</h3>
+                  <ul className="text-gray-600">
+                    {skills.map((skill, index) => (
+                      <li key={index}>{skill}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Certifications</h2>
             <ul className="space-y-2 text-gray-600">
-              <li>AWS Machine Learning Specialty</li>
-              <li>Deep Learning Specialization - Coursera</li>
-              <li>TensorFlow Developer Certificate</li>
+              {resume?.certifications.map((cert, index) => (
+                <li key={index}>{cert}</li>
+              ))}
             </ul>
           </section>
         </div>

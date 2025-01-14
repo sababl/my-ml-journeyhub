@@ -1,42 +1,41 @@
 import { useState } from "react";
-
-type Post = {
-  id: number;
-  title: string;
-  excerpt: string;
-  category: string;
-  date: string;
-  readTime: string;
-};
-
-const posts: Post[] = [
-  {
-    id: 1,
-    title: "Understanding Transformer Architecture",
-    excerpt: "A deep dive into the architecture that revolutionized natural language processing...",
-    category: "Deep Learning",
-    date: "2024-02-15",
-    readTime: "8 min read",
-  },
-  {
-    id: 2,
-    title: "Optimizing PyTorch Models for Production",
-    excerpt: "Best practices and techniques for deploying efficient PyTorch models in production...",
-    category: "MLOps",
-    date: "2024-02-10",
-    readTime: "6 min read",
-  },
-  // Add more blog posts as needed
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchBlogPosts } from "../services/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Blog = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
+  
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: ['blog-posts'],
+    queryFn: fetchBlogPosts,
+  });
   
   const categories = ["all", ...new Set(posts.map(post => post.category))];
   
   const filteredPosts = posts.filter(post => 
     categoryFilter === "all" ? true : post.category === categoryFilter
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Skeleton className="h-12 w-32 mb-8" />
+          <div className="flex gap-4 mb-8">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-10 w-24" />
+            ))}
+          </div>
+          <div className="space-y-6">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-48 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">

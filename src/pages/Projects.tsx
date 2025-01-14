@@ -1,45 +1,42 @@
 import { useState } from "react";
 import { ExternalLink, Github } from "lucide-react";
-
-type Project = {
-  id: number;
-  title: string;
-  description: string;
-  technologies: string[];
-  category: string;
-  github?: string;
-  demo?: string;
-};
-
-const projects: Project[] = [
-  {
-    id: 1,
-    title: "AI Image Generator",
-    description: "A deep learning model that generates realistic images from text descriptions using GANs.",
-    technologies: ["Python", "PyTorch", "React", "FastAPI"],
-    category: "Machine Learning",
-    github: "https://github.com/yourusername/ai-image-generator",
-    demo: "https://demo-url.com",
-  },
-  {
-    id: 2,
-    title: "Sentiment Analysis API",
-    description: "Real-time sentiment analysis API using transformer models.",
-    technologies: ["Python", "Transformers", "Flask", "Docker"],
-    category: "NLP",
-    github: "https://github.com/yourusername/sentiment-analysis",
-  },
-  // Add more projects as needed
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchProjects } from "../services/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Projects = () => {
   const [filter, setFilter] = useState("all");
+  
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: fetchProjects,
+  });
   
   const categories = ["all", ...new Set(projects.map(project => project.category))];
   
   const filteredProjects = projects.filter(project => 
     filter === "all" ? true : project.category === filter
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Skeleton className="h-12 w-48 mb-8" />
+          <div className="flex gap-4 mb-8">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-10 w-24" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-64 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
