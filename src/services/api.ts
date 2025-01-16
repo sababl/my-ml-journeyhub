@@ -16,15 +16,27 @@ export interface PaginatedResponse<T> {
   results: T[];
 }
 
-export interface ProjectData extends BaseModel{
+// First, add new interfaces for Category and Technology
+export interface Category extends BaseModel {
+  name: string;
+  slug: string;
+}
+
+export interface Technology extends BaseModel {
+  name: string;
+  slug: string;
+}
+
+// Then modify ProjectData interface
+export interface ProjectData extends BaseModel {
   title: string;
   description: string;
-  technologies: string;
+  technologies: Technology[]; 
   github_link: string;
   demo_link?: string;
   slug: string;
-  category: string;
-  image: string;  
+  category: Category[];     
+  image: string;
 }
 
 export interface BlogPost extends BaseModel {
