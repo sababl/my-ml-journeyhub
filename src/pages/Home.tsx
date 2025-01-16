@@ -32,10 +32,10 @@ const Home = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center animate-fadeIn">
           <h1 className="text-4xl sm:text-6xl font-bold text-primary mb-6">
-            Hi, I'm {homeData?.name}
+            Hi, I'm {homeData?.first_name} {homeData?.last_name}
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            {homeData?.introduction}
+            {homeData?.about}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link

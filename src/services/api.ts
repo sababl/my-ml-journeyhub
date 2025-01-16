@@ -1,135 +1,99 @@
+import axios from 'axios';
+export interface BaseModel {
+  id: string;
+}
 // Types for our data
-export interface HomeData {
-  name: string;
-  role: string;
-  introduction: string;
+export interface HomeData extends BaseModel {
+  first_name: string;
+  last_name: string;
+  about: string;
 }
 
-export interface ProjectData {
-  id: number;
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+export interface ProjectData extends BaseModel{
   title: string;
   description: string;
-  technologies: string[];
+  technologies: string;
+  github_link: string;
+  demo_link?: string;
+  slug: string;
   category: string;
-  github?: string;
-  demo?: string;
+  image: string;  
 }
 
-export interface BlogPost {
-  id: number;
+export interface BlogPost extends BaseModel {
   title: string;
-  excerpt: string;
-  category: string;
+  slug: string;
+  content: string;
   date: string;
-  readTime: string;
 }
 
 export interface ResumeData {
-  experience: Array<{
-    title: string;
-    company: string;
-    period: string;
-    description: string[];
-  }>;
-  education: Array<{
-    degree: string;
-    institution: string;
-    period: string;
-    details: string;
-  }>;
-  skills: {
-    [category: string]: string[];
-  };
-  certifications: string[];
+  education: Education[];
+  experience: WorkExperience[];
+  skills: Skill[];
+  certifications: Certification[];
+}
+
+interface Education extends BaseModel {
+  institution: string;
+  degree: string;
+  start_date: string;
+  end_date: string;
+}
+
+interface WorkExperience extends BaseModel {
+  company: string;
+  position: string;
+  start_date: string;
+  end_date: string;
+}
+
+interface Skill extends BaseModel {
+  name: string;
+  level: string;
+}
+
+interface Certification extends BaseModel {
+  name: string;
+  issuer: string;
+  date: string;
 }
 
 // API functions
 export const fetchHomeData = async (): Promise<HomeData> => {
-  // Simulated API call
-  return {
-    name: "Your Name",
-    role: "AI/ML Engineer",
-    introduction: "AI/ML Engineer passionate about building intelligent systems. Specializing in machine learning, deep learning, and software development."
-  };
+  const response = await axios.get('http://localhost:8000/api/home/1/');
+  return response.data;
 };
 
 export const fetchProjects = async (): Promise<ProjectData[]> => {
-  // Simulated API call
-  return [
-    {
-      id: 1,
-      title: "AI Image Generator",
-      description: "A deep learning model that generates realistic images from text descriptions using GANs.",
-      technologies: ["Python", "PyTorch", "React", "FastAPI"],
-      category: "Machine Learning",
-      github: "https://github.com/yourusername/ai-image-generator",
-      demo: "https://demo-url.com",
-    },
-    {
-      id: 2,
-      title: "Sentiment Analysis API",
-      description: "Real-time sentiment analysis API using transformer models.",
-      technologies: ["Python", "Transformers", "Flask", "Docker"],
-      category: "NLP",
-      github: "https://github.com/yourusername/sentiment-analysis",
-    },
-  ];
+  const response = await axios.get('http://localhost:8000/api/projects/');
+  return response.data.results;
 };
 
 export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
-  // Simulated API call
-  return [
-    {
-      id: 1,
-      title: "Understanding Transformer Architecture",
-      excerpt: "A deep dive into the architecture that revolutionized natural language processing...",
-      category: "Deep Learning",
-      date: "2024-02-15",
-      readTime: "8 min read",
-    },
-    {
-      id: 2,
-      title: "Optimizing PyTorch Models for Production",
-      excerpt: "Best practices and techniques for deploying efficient PyTorch models in production...",
-      category: "MLOps",
-      date: "2024-02-10",
-      readTime: "6 min read",
-    },
-  ];
+  const response = await axios.get<PaginatedResponse<BlogPost>>('http://localhost:8000/api/posts/');
+  return response.data.results;
 };
 
 export const fetchResumeData = async (): Promise<ResumeData> => {
-  // Simulated API call
+  const [education, experience, skills, certifications] = await Promise.all([
+    axios.get<Education[]>('http://localhost:8000/api/education/'),
+    axios.get<WorkExperience[]>('http://localhost:8000/api/experience/'),
+    axios.get<Skill[]>('http://localhost:8000/api/skills/'),
+    axios.get<Certification[]>('http://localhost:8000/api/certifications/')
+  ]);
+
   return {
-    experience: [
-      {
-        title: "Senior AI Engineer",
-        company: "Company Name",
-        period: "2021 - Present",
-        description: [
-          "Led development of computer vision models for autonomous systems",
-          "Improved model accuracy by 25% through innovative architecture changes",
-          "Mentored junior engineers and conducted technical interviews"
-        ],
-      },
-    ],
-    education: [
-      {
-        degree: "M.S. in Computer Science",
-        institution: "University Name",
-        period: "2019 - 2021",
-        details: "Focus: Machine Learning and Artificial Intelligence",
-      },
-    ],
-    skills: {
-      Programming: ["Python", "JavaScript/TypeScript", "C++"],
-      "ML/AI": ["PyTorch", "TensorFlow", "Scikit-learn"],
-      Tools: ["Docker", "Git", "AWS/GCP"],
-    },
-    certifications: [
-      "AWS Machine Learning Specialty",
-      "Deep Learning Specialization - Coursera",
-      "TensorFlow Developer Certificate",
-    ],
+    education: education.data,
+    experience: experience.data,
+    skills: skills.data,
+    certifications: certifications.data
   };
 };

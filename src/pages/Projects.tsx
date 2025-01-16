@@ -1,21 +1,20 @@
-import { useState } from "react";
-import { ExternalLink, Github } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchProjects } from "../services/api";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+import  { ProjectData, PaginatedResponse,fetchProjects }  from '../services/api';
 
 const Projects = () => {
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<string>('all');
   
-  const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: fetchProjects,
-  });
+const { data: projects = [], isLoading } = useQuery<ProjectData[]>({
+  queryKey: ['projects'],
+  queryFn: fetchProjects,
+});
+
+  const categories = ['all', ...new Set(projects.map(project => project.category))];
   
-  const categories = ["all", ...new Set(projects.map(project => project.category))];
-  
-  const filteredProjects = projects.filter(project => 
-    filter === "all" ? true : project.category === filter
+  const filteredProjects = projects?.filter(project => 
+    filter === 'all' ? true : project.category === filter
   );
 
   if (isLoading) {
@@ -58,49 +57,31 @@ const Projects = () => {
             </button>
           ))}
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map(project => (
-            <div
-              key={project.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-            >
+          {filteredProjects?.map((project) => (
+            <div key={project.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <img src={project.image} alt={project.title} className="w-full h-48 object-cover" />
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-primary mb-2">
-                  {project.title}
-                </h3>
+                <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
                 <p className="text-gray-600 mb-4">{project.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.map(tech => (
-                    <span
-                      key={tech}
-                      className="px-2 py-1 bg-secondary rounded-md text-xs font-medium text-gray-600"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
                 <div className="flex gap-4">
-                  {project.github && (
+                  <a
+                    href={project.github_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary/80"
+                  >
+                    GitHub
+                  </a>
+                  {project.demo_link && (
                     <a
-                      href={project.github}
+                      href={project.demo_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-gray-600 hover:text-primary transition-colors"
+                      className="text-primary hover:text-primary/80"
                     >
-                      <Github className="h-5 w-5 mr-1" />
-                      Code
-                    </a>
-                  )}
-                  {project.demo && (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-gray-600 hover:text-primary transition-colors"
-                    >
-                      <ExternalLink className="h-5 w-5 mr-1" />
-                      Demo
+                      Live Demo
                     </a>
                   )}
                 </div>
