@@ -1,7 +1,10 @@
+
 import axios from 'axios';
+
 export interface BaseModel {
   id: string;
 }
+
 // Types for our data
 export interface HomeData extends BaseModel {
   first_name: string;
@@ -67,12 +70,14 @@ interface WorkExperience extends BaseModel {
   position: string;
   start_date: string;
   end_date: string | null;  // Made nullable to match Django model
+  description?: string;     // Optional description field
   responsibilities: string;  // Added field from Django model
 }
 
 interface Skill extends BaseModel {
   name: string;
-  proficiency: string;  // Changed from level to proficiency to match Django model
+  level?: string;           // Optional level field for backward compatibility
+  proficiency: string;      // Changed from level to proficiency to match Django model
 }
 
 interface Certification extends BaseModel {

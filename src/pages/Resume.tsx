@@ -1,3 +1,4 @@
+
 import { FileDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchResumeData } from "../services/api";
@@ -5,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 
 const Resume = () => {
-  const { data: resume, isLoading, error } = useQuery<ResumeData>({
+  const { data: resume, isLoading, error } = useQuery({
     queryKey: ['resume'],
     queryFn: fetchResumeData,
   });
@@ -105,7 +106,7 @@ const Resume = () => {
               {resume.skills && resume.skills.length > 0 ? (
                 resume.skills.map((skill) => (
                   <div key={skill.id}>
-                    <span className="text-gray-600">{skill.name} - {skill.level}</span>
+                    <span className="text-gray-600">{skill.name} - {skill.level || skill.proficiency}</span>
                   </div>
                 ))
               ) : (
