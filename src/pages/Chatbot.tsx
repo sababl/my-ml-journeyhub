@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
 // Define message types
@@ -88,7 +87,30 @@ const Chatbot = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-4xl font-bold text-primary mb-8">Question Answering System</h1>
+        <h1 className="text-4xl font-bold text-primary mb-4">Question Answering System</h1>
+        
+        {/* Description section */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="flex items-start">
+            <HelpCircle className="h-6 w-6 text-primary mr-3 mt-1 flex-shrink-0" />
+            <div>
+              <h2 className="text-xl font-semibold mb-2">How It Works</h2>
+              <p className="text-gray-600 mb-3">
+                This question answering system uses advanced natural language processing to provide accurate 
+                answers to your queries. Simply type your question in the input field below and receive 
+                an AI-generated response based on a comprehensive knowledge base.
+              </p>
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 text-sm">
+                <p className="font-medium text-blue-700">Tips for best results:</p>
+                <ul className="list-disc list-inside text-blue-600 mt-2 space-y-1">
+                  <li>Ask clear, specific questions</li>
+                  <li>Provide context when needed</li>
+                  <li>Try rephrasing if you don't get the answer you expected</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <Card className="mb-4">
           <CardContent className="p-6">
