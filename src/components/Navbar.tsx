@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
@@ -56,6 +57,16 @@ const Navbar = () => {
               }`}
             >
               Blog
+            </Link>
+            <Link
+              to="/chatbot"
+              className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${
+                isActive("/chatbot")
+                  ? "text-accent border-b-2 border-accent"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Chatbot
             </Link>
           </div>
         </div>
